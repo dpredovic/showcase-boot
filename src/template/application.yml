@@ -1,0 +1,28 @@
+server:
+  port: 9000
+  address: 127.0.0.1
+  #ssl:
+  #  key-store: file:keystore.jks
+  #  key-store-password: password
+  tomcat:
+    max-threads: 10
+    access-log-enabled: true
+
+security:
+  require-ssl: true
+
+management:
+  port: 9001
+  address: 127.0.0.1
+  
+logging:
+  config: logback.xml
+
+spring:
+  profiles:
+    active: standalone
+  datasource:
+    url: jdbc:postgresql://127.0.0.1/test
+    username: postgres
+    password: admin
+    max-active: 20
