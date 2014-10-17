@@ -68,6 +68,26 @@ public class ApplicationIntegrationTests {
         }
     }
 
+    private static RestTemplate getTestRestTemplate(String username, String password) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        MappingJackson2HttpMessageConverter jackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
+        jackson2HttpMessageConverter.setObjectMapper(objectMapper);
+
+        HttpClient httpClient;
+        if (username == null) {
+            httpClient = HttpClients.createDefault();
+        } else {
+            BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+            credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+            httpClient = HttpClients.custom().setDefaultCredentialsProvider(credentialsProvider).build();
+        }
+        ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+        RestTemplate restTemplate = new RestTemplate(requestFactory);
+        restTemplate.setMessageConverters(ImmutableList.<HttpMessageConverter<?>>of(jackson2HttpMessageConverter));
+        return restTemplate;
+    }
+
     @Test
     public void testSecurityUnknown() throws Exception {
 
@@ -94,26 +114,6 @@ public class ApplicationIntegrationTests {
         } catch (RuntimeException ignore) {
             failBecauseExceptionWasNotThrown(HttpClientErrorException.class);
         }
-    }
-
-    private static RestTemplate getTestRestTemplate(String username, String password) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        MappingJackson2HttpMessageConverter jackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
-        jackson2HttpMessageConverter.setObjectMapper(objectMapper);
-
-        HttpClient httpClient;
-        if (username == null) {
-            httpClient = HttpClients.createDefault();
-        } else {
-            BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-            credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
-            httpClient = HttpClients.custom().setDefaultCredentialsProvider(credentialsProvider).build();
-        }
-        ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-        RestTemplate restTemplate = new RestTemplate(requestFactory);
-        restTemplate.setMessageConverters(ImmutableList.<HttpMessageConverter<?>>of(jackson2HttpMessageConverter));
-        return restTemplate;
     }
 
     @Configuration
@@ -144,18 +144,18 @@ public class ApplicationIntegrationTests {
         }
 
         @Bean
-        public ObjectMapper objectMapper() {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-            return objectMapper;
-        }
-
-        @Bean
         public HttpMessageConverter<?> httpMessageConverter() {
             MappingJackson2HttpMessageConverter jackson2HttpMessageConverter =
                 new MappingJackson2HttpMessageConverter();
             jackson2HttpMessageConverter.setObjectMapper(objectMapper());
             return jackson2HttpMessageConverter;
+        }
+
+        @Bean
+        public ObjectMapper objectMapper() {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+            return objectMapper;
         }
     }
 
