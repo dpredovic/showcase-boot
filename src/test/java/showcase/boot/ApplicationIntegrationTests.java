@@ -6,6 +6,8 @@ import com.google.common.collect.ImmutableList;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
+import org.apache.http.conn.ssl.SSLContextBuilder;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClients;
 import org.junit.Test;
@@ -29,6 +31,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import showcase.boot.domain.Contact;
 
+import javax.net.ssl.SSLContext;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 
@@ -46,7 +50,7 @@ public class ApplicationIntegrationTests {
     private RestTemplate restTemplate;
 
     @Test
-    public void testContactGet() throws Exception {
+    public void testContactGet() {
 
         ResponseEntity<Contact> responseEntity =
             restTemplate.getForEntity("http://localhost:" + port + "/contacts/1", Contact.class);
@@ -56,15 +60,13 @@ public class ApplicationIntegrationTests {
     }
 
     @Test
-    public void testSecurityAnon() throws Exception {
+    public void testSecurityAnon() {
 
         try {
             getTestRestTemplate(null, null).getForEntity("http://localhost:" + port + "/contacts/1", Contact.class);
             failBecauseExceptionWasNotThrown(HttpClientErrorException.class);
         } catch (HttpClientErrorException e) {
             assertThat(e.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        } catch (RuntimeException ignore) {
-            failBecauseExceptionWasNotThrown(HttpClientErrorException.class);
         }
     }
 
@@ -89,7 +91,7 @@ public class ApplicationIntegrationTests {
     }
 
     @Test
-    public void testSecurityUnknown() throws Exception {
+    public void testSecurityUnknown() {
 
         try {
             getTestRestTemplate("unknown", "dummy").getForEntity("http://localhost:" + port + "/contacts/1",
@@ -97,13 +99,11 @@ public class ApplicationIntegrationTests {
             failBecauseExceptionWasNotThrown(HttpClientErrorException.class);
         } catch (HttpClientErrorException e) {
             assertThat(e.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        } catch (RuntimeException ignore) {
-            failBecauseExceptionWasNotThrown(HttpClientErrorException.class);
         }
     }
 
     @Test
-    public void testSecurityWrongPass() throws Exception {
+    public void testSecurityWrongPass() {
 
         try {
             getTestRestTemplate("user", "wrongpass").getForEntity("http://localhost:" + port + "/contacts/1",
@@ -111,8 +111,6 @@ public class ApplicationIntegrationTests {
             failBecauseExceptionWasNotThrown(HttpClientErrorException.class);
         } catch (HttpClientErrorException e) {
             assertThat(e.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        } catch (RuntimeException ignore) {
-            failBecauseExceptionWasNotThrown(HttpClientErrorException.class);
         }
     }
 
@@ -140,7 +138,18 @@ public class ApplicationIntegrationTests {
         public HttpClient httpClient() {
             BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
             basicCredentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
-            return HttpClients.custom().setDefaultCredentialsProvider(basicCredentialsProvider).build();
+
+            // support self-signed certificates, without a keyStore
+            SSLContext sslContext;
+            try {
+                sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            return HttpClients.custom()
+                              .setDefaultCredentialsProvider(basicCredentialsProvider)
+                              .setSslcontext(sslContext)
+                              .build();
         }
 
         @Bean
