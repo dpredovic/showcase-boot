@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 @WebAppConfiguration
 @IntegrationTest({"server.port=0"})
 @ActiveProfiles("standalone")
-public class ApplicationIntegrationTests {
+public class ApplicationIntegrationTest {
 
     @Value("${local.server.port}")
     private int port;
