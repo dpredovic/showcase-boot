@@ -135,6 +135,14 @@ public class ApplicationIntegrationTests {
         }
 
         @Bean
+        public HttpMessageConverter<?> httpMessageConverter() {
+            MappingJackson2HttpMessageConverter jackson2HttpMessageConverter =
+                new MappingJackson2HttpMessageConverter();
+            jackson2HttpMessageConverter.setObjectMapper(objectMapper());
+            return jackson2HttpMessageConverter;
+        }
+
+        @Bean
         public HttpClient httpClient() {
             BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
             basicCredentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
@@ -150,14 +158,6 @@ public class ApplicationIntegrationTests {
                               .setDefaultCredentialsProvider(basicCredentialsProvider)
                               .setSslcontext(sslContext)
                               .build();
-        }
-
-        @Bean
-        public HttpMessageConverter<?> httpMessageConverter() {
-            MappingJackson2HttpMessageConverter jackson2HttpMessageConverter =
-                new MappingJackson2HttpMessageConverter();
-            jackson2HttpMessageConverter.setObjectMapper(objectMapper());
-            return jackson2HttpMessageConverter;
         }
 
         @Bean
