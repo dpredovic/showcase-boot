@@ -7,7 +7,7 @@ CREATE TABLE customer (
 );
 
 CREATE TABLE customer_properties (
-  customer_id    BIGINT NOT NULL REFERENCES customer,
+  customer_id BIGINT NOT NULL REFERENCES customer ON DELETE CASCADE,
   properties     VARCHAR(255),
   properties_key VARCHAR(255),
   PRIMARY KEY (customer_id, properties_key)
@@ -21,11 +21,11 @@ CREATE TABLE contact (
   last_name    VARCHAR(255),
   street       VARCHAR(255),
   zip_code     VARCHAR(255),
-  customer_id  BIGINT NOT NULL REFERENCES customer
+  customer_id BIGINT NOT NULL REFERENCES customer ON DELETE CASCADE
 );
 
 CREATE TABLE contact_communications (
-  contact_id         BIGINT NOT NULL REFERENCES contact,
+  contact_id BIGINT NOT NULL REFERENCES contact ON DELETE CASCADE,
   communications     VARCHAR(255),
   communications_key VARCHAR(255),
   PRIMARY KEY (contact_id, communications_key)

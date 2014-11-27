@@ -1,16 +1,20 @@
 package showcase.boot.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
-import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
@@ -18,28 +22,31 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@RequiredArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Customer {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Basic(optional = false)
+
+    @NonNull
     private Long cooperationPartnerId;
-    @Basic(optional = false)
+    @NonNull
     @Temporal(TemporalType.DATE)
     private Date registrationDate;
-    @Basic(optional = false)
+    @NonNull
     private String customerType;
-    @Basic(optional = false)
+    @NonNull
     private String dispatchType;
+
     @ElementCollection
     private Map<String, String> properties = new HashMap<String, String>();
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     @MapKey(name = "contactType")
-    private Map<ContactType, Contact> contacts;
+    private Map<ContactType, Contact> contacts = new EnumMap<ContactType, Contact>(ContactType.class);
 
 }
