@@ -4,16 +4,21 @@ server:
   #ssl:
   #  key-store: file:keystore.jks
   #  key-store-password: password
-  tomcat:
-    max-threads: 10
-    access-log-enabled: true
+  #tomcat:
+  #  max-threads: 10
+  #  access-log-enabled: true
 
-security:
-  require-ssl: true
+#security:
+#  require-ssl: true
 
 management:
   port: 9001
   address: 127.0.0.1
+
+security:
+  user:
+    name: admin
+    password: pass
   
 logging:
   config: logback.xml
