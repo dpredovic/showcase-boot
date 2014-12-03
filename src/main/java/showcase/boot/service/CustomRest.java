@@ -3,6 +3,7 @@ package showcase.boot.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import showcase.boot.domain.Contact;
 import showcase.boot.domain.ContactType;
@@ -18,7 +19,12 @@ class CustomRest {
     @Autowired
     private CustomerRepository customerRepository;
 
-    @RequestMapping("/customers/generateData")
+    @RequestMapping(value = "/customers/coreData/{id}", method = RequestMethod.GET)
+    Customer getCoreData(@PathVariable("id") long id) {
+        return customerRepository.findOne(id);
+    }
+
+    @RequestMapping(value = "/customers/generateData", method = RequestMethod.GET)
     int generateData() {
         customerRepository.deleteAllInBatch();
         final int n = 1000;
@@ -38,11 +44,6 @@ class CustomRest {
                      new Contact("firstName" + i, "lastName" + i, "street" + i, Integer.toString(10000 + i),
                                  Integer.toString(i % 10), customer, ContactType.MAIN));
         return customer;
-    }
-
-    @RequestMapping("/customers/coreData/{id}")
-    Customer getCoreData(@PathVariable("id") long id) {
-        return customerRepository.findOne(id);
     }
 
 }

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +23,7 @@ import javax.persistence.ManyToOne;
 @Data
 @NoArgsConstructor
 @RequiredArgsConstructor
+@ToString(exclude = "customer")
 public class Contact {
 
     @Id

@@ -7,9 +7,13 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
+import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
+import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import showcase.boot.domain.Contact;
+import showcase.boot.domain.Customer;
 
 @Configuration
 @ComponentScan
@@ -18,6 +22,15 @@ public class Application {
 
     public static void main(String... args) {
         new SpringApplicationBuilder(Application.class).run(args);
+    }
+
+    @Configuration
+    protected static class IdExposingRepositoryRestMvcConfiguration extends RepositoryRestMvcConfiguration {
+
+        @Override
+        protected void configureRepositoryRestConfiguration(RepositoryRestConfiguration config) {
+            config.exposeIdsFor(Customer.class, Contact.class);
+        }
     }
 
     @Configuration
