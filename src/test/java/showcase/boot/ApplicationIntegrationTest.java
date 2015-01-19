@@ -122,22 +122,12 @@ public class ApplicationIntegrationTest {
 
         @Bean
         public RestTemplate restTemplate() {
-            RestTemplate restTemplate = new RestTemplate(requestFactory());
-            restTemplate.setMessageConverters(ImmutableList.<HttpMessageConverter<?>>of(httpMessageConverter()));
-            return restTemplate;
+            return new RestTemplate(requestFactory());
         }
 
         @Bean
         public ClientHttpRequestFactory requestFactory() {
             return new HttpComponentsClientHttpRequestFactory(httpClient());
-        }
-
-        @Bean
-        public HttpMessageConverter<?> httpMessageConverter() {
-            MappingJackson2HttpMessageConverter jackson2HttpMessageConverter =
-                new MappingJackson2HttpMessageConverter();
-            jackson2HttpMessageConverter.setObjectMapper(objectMapper());
-            return jackson2HttpMessageConverter;
         }
 
         @Bean
@@ -158,12 +148,6 @@ public class ApplicationIntegrationTest {
                               .build();
         }
 
-        @Bean
-        public ObjectMapper objectMapper() {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-            return objectMapper;
-        }
     }
 
 }
