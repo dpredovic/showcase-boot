@@ -1,9 +1,8 @@
 package showcase.boot;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
@@ -15,9 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import showcase.boot.domain.Contact;
 import showcase.boot.domain.Customer;
 
-@Configuration
-@ComponentScan
-@EnableAutoConfiguration
+@SpringBootApplication
 public class Application {
 
     public static void main(String... args) {
