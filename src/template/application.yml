@@ -15,11 +15,6 @@ management:
   port: 9001
   address: 127.0.0.1
 
-security:
-  user:
-    name: admin
-    password: pass
-  
 logging:
   config: logback.xml
 
